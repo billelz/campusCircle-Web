@@ -29,7 +29,7 @@ export function Moderation() {
   const [selectedChannel, setSelectedChannel] = useState<number | null>(null)
   const [subscribers, setSubscribers] = useState<Subscription[]>([])
   const [userMap, setUserMap] = useState<Record<number, UserProfile | null>>({})
-  const [loadingSubscribers, setLoadingSubscribers] = useState(false)
+  const [loadingSubscribers, setLoadingSubscribers] = useState(true)
   const [banReason, setBanReason] = useState("Channel policy violation")
 
   useEffect(() => {
@@ -44,13 +44,12 @@ export function Moderation() {
     void api.getChannels().then((data) => {
       const list = data.map((channel) => ({ id: channel.id, name: channel.name }))
       setChannels(list)
-      if (!selectedChannel && list[0]) setSelectedChannel(list[0].id)
+      setSelectedChannel((prev) => prev ?? list[0]?.id ?? null)
     })
   }, [])
 
   useEffect(() => {
     if (!token || !selectedChannel || !isModerator) return
-    setLoadingSubscribers(true)
     void api
       .getChannelSubscribers(selectedChannel, token)
       .then((data) => setSubscribers(data))
@@ -233,7 +232,10 @@ export function Moderation() {
                 <label className="text-xs uppercase tracking-[0.2em] text-ink/60">Channel</label>
                 <select
                   value={selectedChannel ?? ""}
-                  onChange={(event) => setSelectedChannel(Number(event.target.value))}
+                  onChange={(event) => {
+                    setLoadingSubscribers(true)
+                    setSelectedChannel(Number(event.target.value))
+                  }}
                   className="mt-2 w-full rounded-2xl border border-ink/10 bg-white px-4 py-3 text-sm"
                 >
                   {channels.map((channel) => (
