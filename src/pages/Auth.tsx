@@ -1,11 +1,13 @@
-import { useState } from "react"
-import { useNavigate } from "react-router-dom"
+import { useEffect, useState } from "react"
+import { useNavigate, useSearchParams } from "react-router-dom"
 import { Panel } from "../components/Panel"
 import { useAuthStore } from "../stores/auth"
+import logo from "../assets/logo.png"
 
 export function Auth() {
   const navigate = useNavigate()
   const { login, register, loading, error } = useAuthStore()
+  const [searchParams] = useSearchParams()
   const [mode, setMode] = useState<"login" | "register">("login")
   const [form, setForm] = useState({
     username: "",
@@ -38,11 +40,23 @@ export function Auth() {
     }
   }
 
+  useEffect(() => {
+    const modeParam = searchParams.get("mode")
+    if (modeParam === "login" || modeParam === "register") {
+      setMode(modeParam)
+    }
+  }, [searchParams])
+
   return (
     <div className="mx-auto flex min-h-screen max-w-5xl items-center px-6 py-12">
       <div className="grid w-full gap-8 lg:grid-cols-[1.1fr_1fr]">
         <div className="space-y-6">
-          <p className="text-xs uppercase tracking-[0.3em] text-ink/50">CampusCircle</p>
+          <div className="flex items-center gap-3">
+            <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-white/90 shadow-soft">
+              <img src={logo} alt="CampusCircle logo" className="h-8 w-8" />
+            </div>
+            <p className="text-xs uppercase tracking-[0.3em] text-ink/50">CampusCircle</p>
+          </div>
           <h1 className="font-display text-4xl leading-tight text-ink">
             Welcome back to the community intelligence hub.
           </h1>
@@ -52,7 +66,7 @@ export function Auth() {
           <div className="flex gap-3">
             <button
               className={`rounded-full px-5 py-2 text-sm font-semibold ${
-                mode === "login" ? "bg-ink text-white" : "border border-ink/10 text-ink"
+                mode === "login" ? "bg-tide text-white" : "border border-ink/10 text-ink"
               }`}
               onClick={() => setMode("login")}
               type="button"
@@ -61,7 +75,7 @@ export function Auth() {
             </button>
             <button
               className={`rounded-full px-5 py-2 text-sm font-semibold ${
-                mode === "register" ? "bg-ink text-white" : "border border-ink/10 text-ink"
+                mode === "register" ? "bg-tide text-white" : "border border-ink/10 text-ink"
               }`}
               onClick={() => setMode("register")}
               type="button"
@@ -136,7 +150,7 @@ export function Auth() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full rounded-full bg-ink px-6 py-3 text-sm font-semibold text-white hover:bg-ink/90 disabled:opacity-70"
+              className="w-full rounded-full bg-tide px-6 py-3 text-sm font-semibold text-white hover:bg-tide/90 disabled:opacity-70"
             >
               {loading ? "Processing..." : mode === "login" ? "Sign in" : "Create account"}
             </button>

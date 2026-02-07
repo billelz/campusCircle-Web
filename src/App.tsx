@@ -1,11 +1,12 @@
 import { useEffect } from "react"
-import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom"
+import { BrowserRouter, Route, Routes } from "react-router-dom"
 import { Shell } from "./components/Shell"
 import { RequireAuth, RequireRole } from "./components/RequireAuth"
 import { AdvancedSearch } from "./pages/AdvancedSearch"
 import { Auth } from "./pages/Auth"
 import { ChannelAnalytics } from "./pages/ChannelAnalytics"
 import { Dashboard } from "./pages/Dashboard"
+import { Landing } from "./pages/Landing"
 import { Leaderboards } from "./pages/Leaderboards"
 import { Moderation } from "./pages/Moderation"
 import { Profile } from "./pages/Profile"
@@ -22,9 +23,9 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
+        <Route path="/" element={<Landing />} />
         <Route path="/auth" element={<Auth />} />
         <Route element={<Shell />}>
-          <Route path="/" element={<Navigate to="/dashboard" replace />} />
           <Route
             path="/dashboard"
             element={

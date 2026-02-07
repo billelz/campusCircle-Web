@@ -1,6 +1,7 @@
 import { NavLink, Outlet, useNavigate } from "react-router-dom"
 import { useState } from "react"
 import { useAuthStore, useRoles } from "../stores/auth"
+import logo from "../assets/logo.png"
 
 const navItems = [
   { to: "/dashboard", label: "User Dashboard" },
@@ -28,9 +29,14 @@ export function Shell() {
   return (
     <div className="flex min-h-screen bg-transparent text-ink">
       <aside className="hidden w-72 flex-col gap-8 bg-ink px-6 py-8 text-white lg:flex">
-        <div>
-          <p className="text-xs uppercase tracking-[0.4em] text-white/60">CampusCircle</p>
-          <h1 className="mt-2 font-display text-2xl leading-tight">Community Intelligence Hub</h1>
+        <div className="flex items-center gap-3">
+          <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-white/10">
+            <img src={logo} alt="CampusCircle logo" className="h-8 w-8" />
+          </div>
+          <div>
+            <p className="text-xs uppercase tracking-[0.4em] text-white/60">CampusCircle</p>
+            <h1 className="mt-2 font-display text-lg leading-tight">Community Intelligence Hub</h1>
+          </div>
         </div>
         <nav className="flex flex-1 flex-col gap-1">
           {filteredNav.map((item) => (
@@ -75,16 +81,21 @@ export function Shell() {
 
       <div className="flex min-h-screen flex-1 flex-col">
         <header className="flex flex-wrap items-center justify-between gap-4 border-b border-white/50 bg-white/70 px-6 py-5 backdrop-blur">
-          <div>
-            <p className="text-xs uppercase tracking-[0.3em] text-ink/50">Dashboard</p>
-            <h2 className="font-display text-2xl">Live campus signals</h2>
+          <div className="flex items-center gap-3">
+            <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-white shadow-soft">
+              <img src={logo} alt="CampusCircle logo" className="h-7 w-7" />
+            </div>
+            <div>
+              <p className="text-xs uppercase tracking-[0.3em] text-ink/50">Dashboard</p>
+              <h2 className="font-display text-2xl">Live campus signals</h2>
+            </div>
           </div>
           <div className="flex flex-wrap items-center gap-3">
             <div className="flex items-center gap-2 rounded-full border border-ink/10 bg-white px-4 py-2 text-sm shadow-soft">
               <span className="h-2 w-2 rounded-full bg-grove" />
               <span>Syncing every 5 min</span>
             </div>
-            <button className="rounded-full bg-ink px-5 py-2 text-sm font-semibold text-white hover:bg-ink/90">
+            <button className="rounded-full bg-tide px-5 py-2 text-sm font-semibold text-white hover:bg-tide/90">
               New Report
             </button>
             <button
