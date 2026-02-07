@@ -29,29 +29,39 @@ export function ChannelBadges() {
   // Load channels created by current user
   useEffect(() => {
     if (!token || !user?.username) return
-    setLoading(true)
-    api.getChannelsByCreator(user.username, token)
-      .then((data) => {
+    
+    let cancelled = false
+    const loadChannels = async () => {
+      try {
+        const data = await api.getChannelsByCreator(user.username, token)
+        if (cancelled) return
         setChannels(data)
         if (data.length > 0) {
           setSelectedChannel(data[0])
         }
-        setLoading(false)
-      })
-      .catch((err) => {
+      } catch (err) {
+        if (cancelled) return
         setError("No channels found")
-        setLoading(false)
         console.error(err)
-      })
+      } finally {
+        if (!cancelled) setLoading(false)
+      }
+    }
+    void loadChannels()
+    return () => { cancelled = true }
   }, [token, user?.username])
 
   // Load subscribers when channel changes
   useEffect(() => {
     if (!token || !selectedChannel) return
-    setSubscribersLoading(true)
     
-    api.getChannelSubscribers(selectedChannel.id, token)
-      .then(async (subs) => {
+    let cancelled = false
+    
+    const loadSubscribers = async () => {
+      try {
+        const subs = await api.getChannelSubscribers(selectedChannel.id, token)
+        if (cancelled) return
+        
         // For each subscriber, get their user info and badges
         const subscribersWithBadges: SubscriberWithBadges[] = await Promise.all(
           subs.map(async (sub) => {
@@ -68,14 +78,26 @@ export function ChannelBadges() {
             }
           })
         )
+        if (cancelled) return
         setSubscribers(subscribersWithBadges)
-        setSubscribersLoading(false)
-      })
-      .catch((err) => {
+      } catch (err) {
+        if (cancelled) return
         setError("No channels found")
-        setSubscribersLoading(false)
         console.error(err)
-      })
+      } finally {
+        if (!cancelled) setSubscribersLoading(false)
+      }
+    }
+    
+    // Use startTransition or schedule state updates
+    Promise.resolve().then(() => {
+      if (!cancelled) {
+        setSubscribers([])
+        setSubscribersLoading(true)
+      }
+    })
+    void loadSubscribers()
+    return () => { cancelled = true }
   }, [token, selectedChannel])
 
   const handleAwardBadge = async (userId: number, badgeType: string) => {
