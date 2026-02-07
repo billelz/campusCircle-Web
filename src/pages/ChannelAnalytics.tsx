@@ -13,7 +13,7 @@ export function ChannelAnalytics() {
   useEffect(() => {
     void api.getChannels().then((data) => {
       setChannels(data)
-      if (!selectedChannel && data[0]) setSelectedChannel(data[0].id)
+      setSelectedChannel((prev) => prev ?? data[0]?.id ?? null)
     })
   }, [])
 
