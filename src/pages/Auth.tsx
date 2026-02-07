@@ -81,7 +81,7 @@ export function Auth() {
           </div>
         </div>
 
-        <Panel title={mode === "login" ? "Sign in" : "Create your account"} subtitle="Use your .edu email">
+        <Panel title={mode === "login" ? "Sign in" : "Create your account"} subtitle={mode === "register" ? "Use your university email" : undefined}>
           <form className="space-y-4" onSubmit={handleSubmit}>
             {mode === "register" && (
               <>

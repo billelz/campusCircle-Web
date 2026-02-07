@@ -7,6 +7,7 @@ type AuthState = {
   user: UserInfo | null
   badges: Badge[]
   loading: boolean
+  initialized: boolean
   error: string | null
   init: () => Promise<void>
   login: (usernameOrEmail: string, password: string) => Promise<void>
@@ -29,16 +30,26 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   user: null,
   badges: [],
   loading: false,
+  initialized: false,
   error: null,
   init: async () => {
     const raw = localStorage.getItem(STORAGE_KEY)
-    if (!raw) return
+    if (!raw) {
+      set({ initialized: true })
+      return
+    }
     try {
       const stored = JSON.parse(raw) as { token: string; refreshToken?: string; user?: UserInfo }
+      if (!stored.token) {
+        set({ initialized: true })
+        return
+      }
       set({ token: stored.token, refreshToken: stored.refreshToken ?? null, user: stored.user ?? null })
       await get().fetchMe()
+      set({ initialized: true })
     } catch {
       localStorage.removeItem(STORAGE_KEY)
+      set({ token: null, refreshToken: null, user: null, initialized: true })
     }
   },
   login: async (usernameOrEmail, password) => {
@@ -109,9 +120,10 @@ export const useRoles = () => {
   const { badges, user } = useAuthStore()
   const badgeTypes = new Set(badges.map((badge) => badge.badgeType))
   const isModerator = badgeTypes.has("MODERATOR")
+  const isAdmin = badgeTypes.has("ADMIN") || user?.email === "admin@campuscircle.com"
   const isVerified = user?.verificationStatus === "VERIFIED"
   const hasUniversity = Boolean(user?.universityId)
   const isUniversityAdmin = isVerified && hasUniversity
 
-  return { isModerator, isUniversityAdmin }
+  return { isModerator, isAdmin, isUniversityAdmin }
 }

@@ -5,6 +5,7 @@ import { RequireAuth, RequireRole } from "./components/RequireAuth"
 import { AdvancedSearch } from "./pages/AdvancedSearch"
 import { Auth } from "./pages/Auth"
 import { ChannelAnalytics } from "./pages/ChannelAnalytics"
+import { ChannelBadges } from "./pages/ChannelBadges"
 import { Dashboard } from "./pages/Dashboard"
 import { Landing } from "./pages/Landing"
 import { Leaderboards } from "./pages/Leaderboards"
@@ -61,6 +62,14 @@ function App() {
           />
           <Route path="/leaderboards" element={<Leaderboards />} />
           <Route path="/channel-analytics" element={<ChannelAnalytics />} />
+          <Route
+            path="/channel-badges"
+            element={
+              <RequireAuth>
+                <ChannelBadges />
+              </RequireAuth>
+            }
+          />
         </Route>
       </Routes>
     </BrowserRouter>

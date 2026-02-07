@@ -11,6 +11,7 @@ const navItems = [
   { to: "/profile", label: "Profile Customization" },
   { to: "/leaderboards", label: "Leaderboards" },
   { to: "/channel-analytics", label: "Channel Analytics" },
+  { to: "/channel-badges", label: "Channel Badges" },
 ]
 
 export function Shell() {
@@ -22,7 +23,7 @@ export function Shell() {
   const filteredNav = navItems.filter((item) => {
     if (item.to === "/moderation") return isModerator
     if (item.to === "/university") return isUniversityAdmin
-    if (item.to === "/dashboard" || item.to === "/profile") return Boolean(token)
+    if (item.to === "/dashboard" || item.to === "/profile" || item.to === "/channel-badges") return Boolean(token)
     return true
   })
 

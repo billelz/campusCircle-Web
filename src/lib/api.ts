@@ -81,6 +81,11 @@ export const api = {
   }) => apiFetch<AuthResponse>("/auth/register", { method: "POST", body: payload }),
   me: (token: string) => apiFetch<UserInfo>("/auth/me", { token }),
   getBadges: (userId: number, token: string) => apiFetch<Badge[]>(`/badges/user/${userId}`, { token }),
+  getBadgeTypes: (token: string) => apiFetch<string[]>(`/badges/types`, { token }),
+  awardBadge: (payload: AwardBadgeRequest, token: string) =>
+    apiFetch<Badge>(`/badges/award`, { method: "POST", body: payload, token }),
+  revokeBadge: (userId: number, badgeType: string, token: string) =>
+    apiFetch<void>(`/badges/user/${userId}/type/${badgeType}`, { method: "DELETE", token }),
   getLeaderboard: () => apiFetch<LeaderboardEntry[]>("/karma/leaderboard"),
   getKarma: (userId: number, token: string) => apiFetch<Karma>(`/karma/user/${userId}`, { token }),
   getNotifications: (username: string, token: string) =>
@@ -88,6 +93,13 @@ export const api = {
   getSavedPosts: (username: string, token: string) =>
     apiFetch<SavedPost>(`/saved-posts/username/${username}`, { token }),
   getModerationQueue: (token: string) => apiFetch<ModerationQueue[]>(`/moderation-queue`, { token }),
+  getModerationQueueByStatus: (status: string, token: string) => 
+    apiFetch<ModerationQueue[]>(`/moderation-queue/status/${status}`, { token }),
+  reviewModerationItem: (id: string, reviewedBy: string, status: string, action: string, token: string) =>
+    apiFetch<ModerationQueue>(`/moderation-queue/${id}/review?reviewedBy=${encodeURIComponent(reviewedBy)}&status=${status}&action=${action}`, 
+      { method: "PATCH", token }),
+  deleteModerationItem: (id: string, token: string) =>
+    apiFetch<void>(`/moderation-queue/${id}`, { method: "DELETE", token }),
   getModerationActions: (token: string) => apiFetch<ModerationAction[]>(`/moderation-actions`, { token }),
   getReports: (token: string) => apiFetch<Report[]>(`/reports`, { token }),
   getBans: (token: string) => apiFetch<Ban[]>(`/bans`, { token }),
@@ -95,6 +107,8 @@ export const api = {
     apiFetch<Ban>(`/bans`, { method: "POST", body: payload, token }),
   getChannels: (page = 0, size = 50) =>
     apiFetch<Channel[]>(`/channels?page=${page}&size=${size}`),
+  getChannelsByCreator: (username: string, token: string) =>
+    apiFetch<Channel[]>(`/channels/created-by/${username}`, { token }),
   getChannelSubscribers: (channelId: number, token: string) =>
     apiFetch<Subscription[]>(`/subscriptions/channel/${channelId}`, { token }),
   unsubscribeUser: (userId: number, channelId: number, token: string) =>
@@ -125,6 +139,12 @@ export type Badge = {
   userId: number
   badgeType: string
   earnedAt?: string
+  channelId?: number | null
+}
+
+export type AwardBadgeRequest = {
+  userId: number
+  badgeType: string
   channelId?: number | null
 }
 
@@ -167,11 +187,19 @@ export type ModerationQueue = {
   id: string
   contentId?: string
   contentType?: string
-  reason?: string
-  status?: string
-  score?: number
+  contentText?: string
+  authorUsername?: string
   flaggedAt?: string
+  aiModerationScore?: number
+  aiFlags?: string[]
+  userReports?: Array<{ reporter: string; reason: string }>
+  status?: string
   reviewedBy?: string
+  reviewedAt?: string
+  moderationAction?: string
+  // Legacy fields for compatibility
+  reason?: string
+  score?: number
 }
 
 export type ModerationAction = {
