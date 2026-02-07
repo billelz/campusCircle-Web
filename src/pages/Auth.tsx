@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import { useNavigate, useSearchParams } from "react-router-dom"
 import { Panel } from "../components/Panel"
 import { useAuthStore } from "../stores/auth"
@@ -8,7 +8,10 @@ export function Auth() {
   const navigate = useNavigate()
   const { login, register, loading, error } = useAuthStore()
   const [searchParams] = useSearchParams()
-  const [mode, setMode] = useState<"login" | "register">("login")
+  const [mode, setMode] = useState<"login" | "register">(() => {
+    const modeParam = searchParams.get("mode")
+    return modeParam === "login" || modeParam === "register" ? modeParam : "login"
+  })
   const [form, setForm] = useState({
     username: "",
     email: "",
@@ -39,13 +42,6 @@ export function Auth() {
       // handled by store
     }
   }
-
-  useEffect(() => {
-    const modeParam = searchParams.get("mode")
-    if (modeParam === "login" || modeParam === "register") {
-      setMode(modeParam)
-    }
-  }, [searchParams])
 
   return (
     <div className="mx-auto flex min-h-screen max-w-5xl items-center px-6 py-12">
